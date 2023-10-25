@@ -11,38 +11,67 @@ class HomeScreen extends StatelessWidget {
         child: Container(
           color: Colors.black,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              // Expanded / Flexible 은 컬럼과 로우 안에서만 사용 가능
-              Flexible(
-                child: Container(
-                  color: Colors.red,
-                  width: 50.0,
-                  height: 50.0,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Container(
+                    height: 50.0,
+                    width: 50.0,
+                    color: Colors.red,
+                  ),
+                  Container(
+                    height: 50.0,
+                    width: 50.0,
+                    color: Colors.orange,
+                  ),
+                  Container(
+                    height: 50.0,
+                    width: 50.0,
+                    color: Colors.yellow,
+                  ),
+                  Container(
+                    height: 50.0,
+                    width: 50.0,
+                    color: Colors.green,
+                  ),
+                ],
               ),
-              Flexible(
-                child: Container(
-                  color: Colors.orange,
-                  width: 50.0,
-                  height: 50.0,
-                ),
+              Container(
+                height: 50.0,
+                width: 50.0,
+                color: Colors.orange,
               ),
-              Expanded(
-                child: Container(
-                  color: Colors.yellow,
-                  width: 50.0,
-                  height: 50.0,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Container(
+                    height: 50.0,
+                    width: 50.0,
+                    color: Colors.red,
+                  ),
+                  Container(
+                    height: 50.0,
+                    width: 50.0,
+                    color: Colors.orange,
+                  ),
+                  Container(
+                    height: 50.0,
+                    width: 50.0,
+                    color: Colors.yellow,
+                  ),
+                  Container(
+                    height: 50.0,
+                    width: 50.0,
+                    color: Colors.green,
+                  ),
+                ],
               ),
-              Expanded(
-                child: Container(
-                  color: Colors.green,
-                  width: 50.0,
-                  height: 50.0,
-                ),
+              Container(
+                height: 50.0,
+                width: 50.0,
+                color: Colors.green,
               ),
             ],
           ),
