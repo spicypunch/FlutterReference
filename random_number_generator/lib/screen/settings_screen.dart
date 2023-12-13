@@ -23,7 +23,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             children: [
               Expanded(
                 child: Row(
-                  children: maxNumber.toInt()
+                  children: maxNumber
+                      .toInt()
                       .toString()
                       .split('')
                       .map(
@@ -46,7 +47,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     });
                   }),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).pop(maxNumber.toInt());
+                },
                 style: ElevatedButton.styleFrom(backgroundColor: RED_COLOR),
                 child: Text('저장!'),
               )

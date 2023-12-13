@@ -12,6 +12,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int maxNumber =
   List<int> randomNumbers = [
     0,
     0,
@@ -76,14 +77,15 @@ class _Header extends StatelessWidget {
           ),
         ),
         IconButton(
-          onPressed: () {
-            Navigator.of(context).push(
+          onPressed: () async {
+            final result = await Navigator.of(context).push<int>(
               MaterialPageRoute(
                 builder: (BuildContext context) {
                   return SettingsScreen();
                 },
               ),
             );
+            print(result);
           },
           icon: const Icon(
             Icons.settings,
