@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:random_number_generator/component/number_row.dart';
 import 'package:random_number_generator/constant/color.dart';
 import 'package:random_number_generator/screen/settings_screen.dart';
 
@@ -12,13 +13,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int maxNumber =
+  int maxNumber = 9;
   List<int> randomNumbers = [
-    0,
-    0,
-    0,
-    0,
-    0,
+    1,
+    2,
+    3,
+    4,
+    5,
   ];
 
   @override
@@ -31,7 +32,9 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const _Header(),
+              _Header(
+                onPressed: onSettingsPop,
+              ),
               _Body(
                 randomNumbers: randomNumbers,
               ),
@@ -43,13 +46,30 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void onSettingsPop() async {
+    final result = await Navigator.of(context).push<int>(
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return SettingsScreen(
+            maxNumber: maxNumber,
+          );
+        },
+      ),
+    );
+    setState(() {
+      if (result != null) {
+        maxNumber = result;
+      }
+    });
+  }
+
   void onRandomNumberGenerate() {
     final random = Random();
 
     final Set<int> newNumbers = {};
 
     while (newNumbers.length != 5) {
-      final number = random.nextInt(9);
+      final number = random.nextInt(maxNumber);
 
       newNumbers.add(number);
     }
@@ -61,7 +81,12 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({super.key});
+  final VoidCallback onPressed;
+
+  const _Header({
+    required this.onPressed,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -77,16 +102,7 @@ class _Header extends StatelessWidget {
           ),
         ),
         IconButton(
-          onPressed: () async {
-            final result = await Navigator.of(context).push<int>(
-              MaterialPageRoute(
-                builder: (BuildContext context) {
-                  return SettingsScreen();
-                },
-              ),
-            );
-            print(result);
-          },
+          onPressed: onPressed,
           icon: const Icon(
             Icons.settings,
             color: RED_COLOR,
@@ -112,22 +128,11 @@ class _Body extends StatelessWidget {
             .entries
             .map(
               (x) => Padding(
-                padding: EdgeInsets.only(
-                    bottom: x.key == randomNumbers.length ? 0 : 16.0),
-                child: Row(
-                  children: x.value
-                      .toString()
-                      .split('')
-                      .map(
-                        (y) => Image.asset(
-                          'asset/img/$y.png',
-                          height: 70.0,
-                          width: 50.0,
-                        ),
-                      )
-                      .toList(),
-                ),
-              ),
+                  padding: EdgeInsets.only(
+                      bottom: x.key == randomNumbers.length ? 0 : 16.0),
+                  child: NumberRow(
+                    num: x.value,
+                  )),
             )
             .toList(),
       ),
