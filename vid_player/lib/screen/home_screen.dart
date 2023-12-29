@@ -17,7 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       width: MediaQuery.of(context).size.width,
       decoration: getBoxDecoration(),
-      child: const Column(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _Logo(
