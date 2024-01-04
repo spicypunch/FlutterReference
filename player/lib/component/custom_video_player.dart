@@ -8,8 +8,7 @@ class CustomVideoPlayer extends StatefulWidget {
   final XFile video;
   final VoidCallback onNewVideoPressed;
 
-  const CustomVideoPlayer(
-      {required this.video, required this.onNewVideoPressed, super.key});
+  const CustomVideoPlayer({required this.video, required this.onNewVideoPressed, super.key});
 
   @override
   State<CustomVideoPlayer> createState() => _CustomVideoPlayerState();
@@ -40,7 +39,7 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
     currentPosition = Duration();
 
     videoController = VideoPlayerController.file(File(widget.video.path));
-    await videoController?.initialize();
+    await videoController!.initialize();
 
     // 슬라이더 영상 재생에 맞게 이동
     videoController!.addListener(() {
@@ -55,7 +54,7 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    if (videoController != null) {
+    if (videoController == null) {
       return CircularProgressIndicator();
     }
     return AspectRatio(
@@ -117,7 +116,7 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
 
     if ((maxPosition - Duration(seconds: 3)).inSeconds >
         currentPosition.inSeconds) {
-      position = currentPosition - const Duration(seconds: 3);
+      position = currentPosition + const Duration(seconds: 3);
     }
 
     videoController!.seekTo(position);
@@ -158,12 +157,17 @@ class _Controls extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           renderIconButton(
-              onPressed: onReversePressed, iconData: Icons.rotate_left),
+              onPressed: onReversePressed,
+              iconData: Icons.rotate_left
+          ),
           renderIconButton(
               onPressed: onPlayPressed,
-              iconData: isPlaying ? Icons.pause : Icons.play_arrow),
+              iconData: isPlaying ? Icons.pause : Icons.play_arrow
+          ),
           renderIconButton(
-              onPressed: onForwardPressed, iconData: Icons.rotate_right),
+              onPressed: onForwardPressed,
+              iconData: Icons.rotate_right
+          ),
         ],
       ),
     );

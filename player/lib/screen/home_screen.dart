@@ -14,7 +14,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: video == null ? renderEmpty() : renderVideo());
+    return Scaffold(
+        backgroundColor: Colors.black,
+        body: video == null ? renderEmpty() : renderVideo(),
+    );
   }
 
   Widget renderVideo() {
@@ -28,7 +31,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget renderEmpty() {
     return Container(
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
       decoration: getBoxDecoration(),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -36,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _Logo(
             onTap: onNewVideoPressed,
           ),
-          SizedBox(
+          const SizedBox(
             height: 30.0,
           ),
           _AppName()
