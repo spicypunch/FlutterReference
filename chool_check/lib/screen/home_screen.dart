@@ -15,19 +15,23 @@ class _HomeScreenState extends State<HomeScreen> {
     126.921252,
   );
   static final CameraPosition initialPosition =
-  CameraPosition(target: latLng, zoom: 15);
+      CameraPosition(target: latLng, zoom: 15);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: renderAppBar(),
-      body: Column(
-        children: [
-          _CustomGoogleMap(initialPosition: initialPosition),
-          const _ChoolCheckButton()
-        ],
-      ),
-    );
+        appBar: renderAppBar(),
+        body: FutureBuilder(
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            return Column(
+              children: [
+                _CustomGoogleMap(initialPosition: initialPosition),
+                const _ChoolCheckButton()
+              ],
+            );
+          },
+          future: checkPermission(),
+        ));
   }
 
   Future<String> checkPermission() async {
@@ -47,11 +51,11 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
 
-     if (checkedPermission == LocationPermission.deniedForever) {
-       return '앱의 위치 권한을 설정에서 허가해 주세요.';
-     }
+    if (checkedPermission == LocationPermission.deniedForever) {
+      return '앱의 위치 권한을 설정에서 허가해 주세요.';
+    }
 
-     return '위치 권한이 허가되었습니다.';
+    return '위치 권한이 허가되었습니다.';
   }
 
   AppBar renderAppBar() {
@@ -67,6 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class _CustomGoogleMap extends StatelessWidget {
   final CameraPosition initialPosition;
+
   const _CustomGoogleMap({required this.initialPosition, super.key});
 
   @override
@@ -89,4 +94,3 @@ class _ChoolCheckButton extends StatelessWidget {
     return const Expanded(child: Text('출근'));
   }
 }
-
