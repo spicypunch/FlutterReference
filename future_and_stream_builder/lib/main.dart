@@ -1,0 +1,11 @@
+import 'package:flutter/material.dart';
+import 'package:future_and_stream_builder/screen/future_builder.dart';
+import 'package:future_and_stream_builder/screen/stream_builder.dart';
+
+void main() {
+  runApp(
+    MaterialApp(
+      home: StreamBuilderScreen(),
+    )
+  );
+}
