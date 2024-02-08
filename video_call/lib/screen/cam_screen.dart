@@ -30,9 +30,8 @@ class _CamScreenState extends State<CamScreen> {
               child: Text(snapshot.error.toString()),
             );
           }
-
           if (!snapshot.hasData) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           }
@@ -76,7 +75,7 @@ class _CamScreenState extends State<CamScreen> {
 
   renderMainView() {
     if (uid == null) {
-      return Center(
+      return const Center(
         child: Text('채널에 참여해주세요.'),
       );
     } else {
@@ -94,7 +93,7 @@ class _CamScreenState extends State<CamScreen> {
 
   renderSubView() {
     if (otherUid == null) {
-      return Center(
+      return const Center(
         child: Text('채널에 유저가 없습니다.'),
       );
     } else {
