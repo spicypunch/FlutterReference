@@ -26,14 +26,40 @@ class CustomTextField extends StatelessWidget {
   }
 
   Widget renderTextField() {
-    return TextField(
+    return TextFormField(
+      // null이 return 되면 에러가 없다.
+      // 에러가 있으면 에러를 string 값으로 리턴해준다.
+      validator: (String? val) {
+        if (val == null || val.isEmpty) {
+          return '값을 입력해주세요';
+        }
+
+        if (isTime) {
+          int time = int.parse(val);
+
+          if (time < 0) {
+            return '0 이상의 숫자를 입력해주세요.';
+          }
+
+          if (time > 24) {
+            return '24 이하의 숫자를 입력해주세요.';
+          }
+        } else {
+
+        }
+
+        return null;
+      },
       cursorColor: Colors.grey,
       maxLines: isTime ? 1 : null,
       expands: !isTime,
+      // maxLength: 500,
       keyboardType: isTime ? TextInputType.number : TextInputType.multiline,
-      inputFormatters: isTime ? [
-        FilteringTextInputFormatter.digitsOnly,
-      ] : [],
+      inputFormatters: isTime
+          ? [
+              FilteringTextInputFormatter.digitsOnly,
+            ]
+          : [],
       decoration: InputDecoration(
         border: InputBorder.none,
         filled: true,
