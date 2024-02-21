@@ -2,10 +2,7 @@ import 'package:calendar_scheduler/screen/home_screen.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-
 import 'database/drift_database.dart';
-
-// import 'package:calendar_scheduler/database/drift_database.dart';
 
 const DEFAULT_COLORS = [
   // 빨강

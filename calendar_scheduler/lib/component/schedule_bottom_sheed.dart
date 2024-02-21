@@ -34,7 +34,7 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _TIme(),
+                    _Time(),
                     SizedBox(
                       height: 16.0,
                     ),
@@ -74,8 +74,8 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
   }
 }
 
-class _TIme extends StatelessWidget {
-  const _TIme({super.key});
+class _Time extends StatelessWidget {
+  const _Time({super.key});
 
   @override
   Widget build(BuildContext context) {
