@@ -1,11 +1,14 @@
 import 'package:calendar_scheduler/component/custom_text_field.dart';
 import 'package:calendar_scheduler/const/colors.dart';
 import 'package:calendar_scheduler/database/drift_database.dart';
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 class ScheduleBottomSheet extends StatefulWidget {
-  const ScheduleBottomSheet({super.key});
+  final DateTime selectedDate;
+
+  const ScheduleBottomSheet({required this.selectedDate, super.key});
 
   @override
   State<ScheduleBottomSheet> createState() => _ScheduleBottomSheetState();
@@ -37,7 +40,7 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
               padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
               child: Form(
                 key: formKey,
-                autovalidateMode: AutovalidateMode.always,
+                // autovalidateMode: AutovalidateMode.always,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -70,7 +73,12 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
                           }
                           return _ColorPicker(
                             colors: snapshot.hasData ? snapshot.data! : [],
-                            selectedColorId: selectedColorId!,
+                            selectedColorId: selectedColorId,
+                            colorIdSetter: (int id) {
+                              setState(() {
+                                selectedColorId = id;
+                              });
+                            },
                           );
                         }),
                     SizedBox(
@@ -89,7 +97,7 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
     );
   }
 
-  void onSavePressed() {
+  void onSavePressed() async {
     // formKey는 생성을 했는데
     // Form 위젯과 결합을 안 했을 때
     if (formKey.currentState == null) {
@@ -102,6 +110,18 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
       print('startTime: $startTime');
       print('endTime: $endTime');
       print('contentTime: $content');
+
+      final key = await GetIt.I<LocalDatabase>().createSchedule(
+        SchedulesCompanion(
+          date: Value(widget.selectedDate),
+          startTime: Value(startTime!),
+          endTime: Value(endTime!),
+          content: Value(content!),
+          colorId: Value(selectedColorId!),
+        )
+      );
+
+      Navigator.of(context).pop();
     } else {
       print('에러가 있습니다.');
     }
@@ -158,12 +178,18 @@ class _Contents extends StatelessWidget {
   }
 }
 
+typedef ColorIdSetter = void Function(int id);
+
 class _ColorPicker extends StatelessWidget {
   final List<CategoryColor> colors;
-  final int selectedColorId;
+  final int? selectedColorId;
+  final ColorIdSetter colorIdSetter;
 
   const _ColorPicker(
-      {required this.colors, required this.selectedColorId, super.key});
+      {required this.colors,
+      required this.selectedColorId,
+      required this.colorIdSetter,
+      super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -173,9 +199,14 @@ class _ColorPicker extends StatelessWidget {
       runSpacing: 10.0,
       children: colors
           .map(
-            (e) => renderColor(
-              e,
-              selectedColorId == e.id,
+            (e) => GestureDetector(
+              onTap: () {
+                colorIdSetter(e.id);
+              },
+              child: renderColor(
+                e,
+                selectedColorId == e.id,
+              ),
             ),
           )
           .toList(),
