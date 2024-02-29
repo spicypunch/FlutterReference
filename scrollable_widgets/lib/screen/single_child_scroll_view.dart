@@ -3,27 +3,20 @@ import 'package:scrollable_widgets/const/colors.dart';
 import 'package:scrollable_widgets/layout/main_layout.dart';
 
 class SingleChildScrollViewScreen extends StatelessWidget {
-  const SingleChildScrollViewScreen({super.key});
+  final List<int> numbers = List.generate(100, (index) => index);
+
+  SingleChildScrollViewScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MainLayout(
       title: 'SingleChildScrollView',
-      body: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
-        child: Column(
-          children: rainbowColors
-              .map(
-                (e) => renderContainer(color: e),
-              )
-              .toList(),
-        ),
-      ),
+      body: renderPerformance(),
     );
   }
 
   // 1
-  // 기본 렌더링 법
+  // 기본 렌더링 법»
   Widget renderSimple() {
     return SingleChildScrollView(
       child: Column(
@@ -62,9 +55,47 @@ class SingleChildScrollViewScreen extends StatelessWidget {
     );
   }
 
+  // 4
+  // 여러가지 physics 정리
+  Widget renderPhysics() {
+    return SingleChildScrollView(
+      // NeverScrollableScrollPhysics - 스크롤 안 됨
+      // AlwaysScrollableScrollPhysics - 스크롤 됨
+      // BouncingScrollPhysics - iOS 스타일
+      // ClampingScrollPhysics - 안드로이드 스타일
+      physics: ClampingScrollPhysics(),
+      child: Column(
+        children: rainbowColors
+            .map(
+              (e) => renderContainer(color: e),
+            )
+            .toList(),
+      ),
+    );
+  }
+
+  // 5
+  // SingleChildScrollView 퍼포먼스
+  Widget renderPerformance() {
+    return SingleChildScrollView(
+      child: Column(
+        children: numbers
+            .map(
+              (e) => renderContainer(
+                color: rainbowColors[e % rainbowColors.length],
+                index: e,
+              ),
+            )
+            .toList(),
+      ),
+    );
+  }
+
   Widget renderContainer({
     required Color color,
+    int? index,
   }) {
+    if (index != null) {}
     return Container(
       height: 300,
       color: color,
