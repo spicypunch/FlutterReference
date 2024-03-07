@@ -11,15 +11,51 @@ class GridViewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MainLayout(
       title: 'GridViewScreen',
-      body: GridView.count(
-        crossAxisCount: 2,
-        children: numbers
-            .map(
-              (e) => renderContainer(
-                  color: rainbowColors[e % rainbowColors.length], index: e),
-            )
-            .toList(),
+      body: renderBuilderCrossAxisCount(),
+    );
+  }
+
+  Widget renderMaxExtend() {
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 50
       ),
+      itemBuilder: (context, index) {
+        return renderContainer(
+            color: rainbowColors[index % rainbowColors.length], index: index);
+      },
+    );
+  }
+
+  // 2 보이는 것만 그림
+  Widget renderBuilderCrossAxisCount() {
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 12.0,
+          mainAxisSpacing: 12.0
+      ),
+      itemBuilder: (context, index) {
+        return renderContainer(
+            color: rainbowColors[index % rainbowColors.length], index: index);
+      },
+      itemCount: 10,
+    );
+  }
+
+  // 1 한 번에 다 그림
+  Widget renderCount() {
+    return GridView.count(
+      crossAxisCount: 2,
+      crossAxisSpacing: 12.0,
+      mainAxisSpacing: 12.0,
+      children: numbers
+          .map(
+            (e) =>
+            renderContainer(
+                color: rainbowColors[e % rainbowColors.length], index: e),
+      )
+          .toList(),
     );
   }
 
