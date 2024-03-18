@@ -49,7 +49,7 @@ class CategoryCard extends StatelessWidget {
                       20,
                       (index) => MainStat(
                         width: constraint.maxWidth / 3,
-                        category: '미세먼지',
+                        category: '미세먼지$index',
                         imgPath: 'asset/img/best.png',
                         level: '최고',
                         stat: '0㎍/㎥',
