@@ -4,11 +4,12 @@ import '../const/colors.dart';
 
 class CardTitle extends StatelessWidget {
   final String title;
+
   const CardTitle({required this.title, super.key});
 
   @override
   Widget build(BuildContext context) {
-    return               Container(
+    return Container(
       decoration: BoxDecoration(
         color: darkColor,
         borderRadius: BorderRadius.only(
