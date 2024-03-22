@@ -26,8 +26,8 @@ class HourlyCard extends StatelessWidget {
               }
 
               return Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 8.0, vertical: 4.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                 child: Row(
                   children: [
                     Expanded(child: Text('$currentHour시')),

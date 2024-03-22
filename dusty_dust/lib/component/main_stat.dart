@@ -40,12 +40,16 @@ class MainStat extends StatelessWidget {
             category,
             style: ts,
           ),
-          const SizedBox(height: 8.0,),
+          const SizedBox(
+            height: 8.0,
+          ),
           Image.asset(
             imgPath,
             width: 50.0,
           ),
-          const SizedBox(height: 8.0,),
+          const SizedBox(
+            height: 8.0,
+          ),
           Text(
             level,
             style: ts,
