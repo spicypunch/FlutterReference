@@ -2,8 +2,6 @@ import 'package:dusty_dust/component/category_card.dart';
 import 'package:dusty_dust/component/hourly_card.dart';
 import 'package:dusty_dust/component/main_app_bar.dart';
 import 'package:dusty_dust/component/main_drawer.dart';
-import 'package:dusty_dust/const/colors.dart';
-import 'package:dusty_dust/const/status_level.dart';
 import 'package:dusty_dust/model/stat_and_status_model.dart';
 import 'package:dusty_dust/model/stat_model.dart';
 import 'package:dusty_dust/repository/stat_repository.dart';
@@ -21,6 +19,22 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String region = regions[0];
+  bool isExpanded = true;
+  ScrollController scrollController = ScrollController();
+
+  @override
+  initState() {
+    super.initState();
+
+    scrollController.addListener(scrollController);
+  }
+
+  @override
+  dispose() {
+    scrollController.removeListener(scrollController);
+    scrollController.dispose();
+    super.dispose();
+  }
 
   Future<Map<ItemCode, List<StatModel>>> fetchData() async {
     Map<ItemCode, List<StatModel>> stats = {};
@@ -47,6 +61,16 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return stats;
+  }
+
+  scrollListener() {
+    bool isExpanded = scrollController.offset < 500 - kToolbarHeight;
+
+    if (isExpanded != this.isExpanded) {
+      setState(() {
+        this.isExpanded = isExpanded;
+      });
+    }
   }
 
   @override
@@ -102,11 +126,14 @@ class _HomeScreenState extends State<HomeScreen> {
             return Container(
               color: status.primaryColor,
               child: CustomScrollView(
+                controller: scrollController,
                 slivers: [
                   MainAppBar(
                     region: region,
                     stat: pm10RecentStat,
                     status: status,
+                    dateTime: pm10RecentStat.dataTime,
+                    isExpanded: true,
                   ),
                   SliverToBoxAdapter(
                     child: Column(
