@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../const/colors.dart';
 import '../model/stat_model.dart';
 import '../model/status_model.dart';
 import '../utils/data_utils.dart';
@@ -9,11 +8,15 @@ class MainAppBar extends StatelessWidget {
   final StatusModel status;
   final StatModel stat;
   final String region;
+  final DateTime dateTime;
+  final bool isExpanded;
 
   const MainAppBar({
     required this.status,
     required this.stat,
     required this.region,
+    required this.dateTime,
+    required this.isExpanded,
     super.key,
   });
 
@@ -23,6 +26,12 @@ class MainAppBar extends StatelessWidget {
 
     return SliverAppBar(
       backgroundColor: status.primaryColor,
+      pinned: true,
+      title: isExpanded
+          ? null
+          : Text(
+              '$region ${DataUtils.getTimeFromDateTime(dateTime: dateTime)}'),
+      centerTitle: true,
       expandedHeight: 500,
       flexibleSpace: FlexibleSpaceBar(
         background: SafeArea(
