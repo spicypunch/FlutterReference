@@ -26,12 +26,12 @@ class _HomeScreenState extends State<HomeScreen> {
   initState() {
     super.initState();
 
-    scrollController.addListener(scrollController);
+    scrollController.addListener(scrollListener);
   }
 
   @override
   dispose() {
-    scrollController.removeListener(scrollController);
+    scrollController.removeListener(scrollListener);
     scrollController.dispose();
     super.dispose();
   }
