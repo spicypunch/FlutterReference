@@ -2,8 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:basic_ui/common/component/custom_text_form_field.dart';
-import 'package:basic_ui/common/component/root_tab.dart';
+import 'package:basic_ui/common/view/root_tab.dart';
 import 'package:basic_ui/common/const/colors.dart';
+import 'package:basic_ui/common/const/data.dart';
 import 'package:basic_ui/common/layout/default_layout.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -22,11 +23,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final dio = Dio();
-
-    final emulatorIp = '10.0.2.2:3000';
-    final simulatorIp = '127.0.0.1:3000';
-
-    final ip = Platform.isIOS ? simulatorIp : emulatorIp;
 
     return DefaultLayout(
         child: SingleChildScrollView(
@@ -82,13 +78,19 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   );
 
+                  final refreshToken = response.data['refreshToken'];
+                  final accessToken = response.data['accessToken'];
+
+                  await storage.write(
+                      key: REFRESH_TOKEN_KEY, value: refreshToken);
+                  await storage.write(
+                      key: ACCESS_TOKEN_KEY, value: accessToken);
+
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => RootTab(),
                     ),
                   );
-
-                  print('시발 ${response.data}');
                 },
                 style: ElevatedButton.styleFrom(
                     backgroundColor: PRIMARY_COLOR,
@@ -98,18 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               TextButton(
-                onPressed: () async {
-                  final refreshToken =
-                      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RAY29kZWZhY3RvcnkuYWkiLCJzdWIiOiJmNTViMzJkMi00ZDY4LTRjMWUtYTNjYS1kYTlkN2QwZDkyZTUiLCJ0eXBlIjoicmVmcmVzaCIsImlhdCI6MTcyMjg1MzIxMywiZXhwIjoxNzIyOTM5NjEzfQ.Pr8PMFDmbqMAMKvVa6X6gQFjpy_0BL14JxSxvnz2Mmk';
-
-                  final response = await dio.post(
-                    'http://$ip/auth/token',
-                    options: Options(
-                      headers: {'authorization': 'Bearer $refreshToken'},
-                    ),
-                  );
-                  print('존나 ${response.data}');
-                },
+                onPressed: () async {},
                 style: TextButton.styleFrom(
                   foregroundColor: Colors.black,
                 ),
