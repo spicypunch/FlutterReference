@@ -1,7 +1,7 @@
 import 'package:basic_ui/common/layout/default_layout.dart';
 import 'package:basic_ui/product/component/product_card.dart';
 import 'package:basic_ui/restaurant/component/restaurant_card.dart';
-import 'package:basic_ui/restaurant/model/restaurant_detail_Model.dart';
+import 'package:basic_ui/restaurant/model/restaurant_detail_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -39,35 +39,34 @@ class RestaurantDetailScreen extends StatelessWidget {
         child: FutureBuilder<Map<String, dynamic>>(
           future: getRestaurantDetail(),
           builder: (_, AsyncSnapshot<Map<String, dynamic>> snapshot) {
-            print(snapshot.data);
-            if (snapshot.hasData) {
-              return Container();
+            if (!snapshot.hasData) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
             }
 
-            final item = RestaurantDetailModel.fromJson(json: snapshot.data!,);
+            final item = RestaurantDetailModel.fromJson(
+              snapshot.data!,
+            );
+
             return CustomScrollView(
               slivers: [
-                renderTop(),
+                renderTop(model: item),
                 renderLabel(),
-                renderProducts(),
+                renderProducts(products: item.products),
               ],
             );
           },
         ));
   }
 
-  SliverToBoxAdapter renderTop() {
+  SliverToBoxAdapter renderTop({
+    required RestaurantDetailModel model,
+  }) {
     return SliverToBoxAdapter(
-      child: RestaurantCard(
-        image: Image.asset('asset/img/food/ddeok_bok_gi.jpg'),
-        name: '불타는 떡볶이',
-        tags: ['떡볶이', '맛있음', '치즈'],
-        ratingsCount: 100,
-        deliveryTime: 30,
-        deliveryFee: 3000,
-        ratings: 4.76,
+      child: RestaurantCard.fromModel(
+        model: model,
         isDetail: true,
-        detail: '종마루',
       ),
     );
   }
@@ -87,18 +86,21 @@ class RestaurantDetailScreen extends StatelessWidget {
     );
   }
 
-  SliverPadding renderProducts() {
+  SliverPadding renderProducts({
+    required List<RestaurantProductModel> products,
+  }) {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate(
-              (context, index) {
+          (context, index) {
+            final model = products[index];
             return Padding(
               padding: const EdgeInsets.only(top: 16.0),
-              child: ProductCard(),
+              child: ProductCard.fromModel(model: model),
             );
           },
-          childCount: 10,
+          childCount: products.length,
         ),
       ),
     );
