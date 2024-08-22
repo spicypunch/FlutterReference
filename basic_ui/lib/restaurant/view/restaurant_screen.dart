@@ -6,17 +6,13 @@ import 'package:basic_ui/restaurant/repository/restaurant_repository.dart';
 import 'package:basic_ui/restaurant/view/restaurant_detail_screen.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RestaurantScreen extends StatelessWidget {
+class RestaurantScreen extends ConsumerWidget {
   const RestaurantScreen({super.key});
 
-  Future<List<RestaurantModel>> paginationRestaurant() async {
-    final dio = Dio();
-
-    dio.interceptors.add(
-      CustomInterceptor(storage: storage),
-    );
-
+  Future<List<RestaurantModel>> paginationRestaurant(WidgetRef ref) async {
+    final dio = ref.watch(dioProvider);
     final resp =
         await RestaurantRepository(dio, baseUrl: 'http://$ip/restaurant')
             .paginate();
@@ -25,13 +21,13 @@ class RestaurantScreen extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       child: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: FutureBuilder<List<RestaurantModel>>(
-            future: paginationRestaurant(),
+            future: paginationRestaurant(ref),
             builder: (context, AsyncSnapshot<List<RestaurantModel>> snapshot) {
               if (!snapshot.hasData) {
                 return Center(
@@ -42,7 +38,6 @@ class RestaurantScreen extends StatelessWidget {
               return ListView.separated(
                 itemBuilder: (_, index) {
                   final pItem = snapshot.data![index];
-
 
                   return GestureDetector(
                     onTap: () {
