@@ -53,8 +53,6 @@ Future<void> initializeService() async {
       onBackground: onIosBackground,
     ),
   );
-
-  // service.startService();
 }
 
 @pragma('vm:entry-point')
