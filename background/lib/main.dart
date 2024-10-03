@@ -11,7 +11,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await requestPermissions();
   await initializeService();
-  runApp(const MyApp());
+  runApp(MaterialApp(home: MyApp()));
 }
 
 Future<void> requestPermissions() async {
@@ -40,7 +40,7 @@ Future<void> initializeService() async {
   await service.configure(
     androidConfiguration: AndroidConfiguration(
       onStart: onStart,
-      autoStart: true,
+      autoStart: false,
       isForegroundMode: true,
       notificationChannelId: 'my_foreground',
       initialNotificationTitle: 'AWESOME SERVICE',
@@ -48,13 +48,13 @@ Future<void> initializeService() async {
       foregroundServiceNotificationId: 888,
     ),
     iosConfiguration: IosConfiguration(
-      autoStart: true,
+      autoStart: false,
       onForeground: onStart,
       onBackground: onIosBackground,
     ),
   );
 
-  service.startService();
+  // service.startService();
 }
 
 @pragma('vm:entry-point')
@@ -109,9 +109,7 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
-  String text = "Stop Service";
-
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -126,42 +124,44 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-   final service = FlutterBackgroundService();
-   if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
-     // 앱이 백그라운드로 갔을 때, 서비스가 실행 중인지 확인하고 실행
-     service.startService();
-   } else if (state == AppLifecycleState.resumed) {
-     // 앱이 포그라운드로 돌아왔을 때 서비스 중지
-     service.invoke("stopService");
-   }
+    final service = FlutterBackgroundService();
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive) {
+      // 앱이 백그라운드로 갔을 때, 서비스가 실행 중인지 확인하고 실행
+      service.startService();
+    } else if (state == AppLifecycleState.resumed) {
+      // 앱이 포그라운드로 돌아왔을 때 서비스 중지
+      service.invoke("stopService");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Service App'),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                child: Text(text),
-                onPressed: () async {
-                  final service = FlutterBackgroundService();
-                  var isRunning = await service.isRunning();
-                  if (isRunning) {
-                    service.invoke("stopService");
-                  } else {
-                    service.startService();
-                  }
-                  setState(() {});
-                },
-              ),
-            ],
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Service App'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              child: const Text('Button'),
+              onPressed: () async {
+                final service = FlutterBackgroundService();
+                var isRunning = await service.isRunning();
+                if (isRunning) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('1')),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('2')),
+                  );
+                }
+              },
+            ),
+          ],
         ),
       ),
     );
