@@ -76,7 +76,7 @@ class RestaurantStateNotifier extends StateNotifier<CursorPaginationBase> {
       }
 
       final resp = await repository.paginate(
-        paginationParams: paginationParams!,
+        paginationParams: paginationParams,
       );
 
       if (state is CursorPaginationFetchingMore) {
