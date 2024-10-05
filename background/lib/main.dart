@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 Future<void> main() async {
@@ -66,6 +67,9 @@ Future<bool> onIosBackground(ServiceInstance service) async {
 void onStart(ServiceInstance service) async {
   DartPluginRegistrant.ensureInitialized();
 
+  final locationManager = LocationManager();
+  final position = await locationManager.getCurrentPosition();
+
   if (service is AndroidServiceInstance) {
     service.on('setAsForeground').listen((event) {
       service.setAsForegroundService();
@@ -90,15 +94,69 @@ void onStart(ServiceInstance service) async {
       }
     }
 
-    print('Background service running: ${DateTime.now()}');
+    print('Background service running: ${position.latitude} ${position.longitude}');
     service.invoke(
       'update',
       {
-        "current_date": DateTime.now().toIso8601String(),
+        "lat": position.latitude,
+        "lon": position.longitude,
       },
     );
   });
 }
+
+class LocationManager {
+  final locationSetting = const LocationSettings(distanceFilter: 5);
+
+  Future<Position> getCurrentPosition() async {
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    LocationPermission permission;
+
+    if (!serviceEnabled) {
+      return Future.error('위치서비스를 사용할 수 없음');
+    }
+
+    permission = await Geolocator.checkPermission();
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('위치권한 요청이 거부됨');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error('위치권한 요청이 영원히 거부됨');
+    }
+
+    final position = await Geolocator.getLastKnownPosition();
+
+    if (position != null) {
+      return position;
+    }
+
+    return await Geolocator.getCurrentPosition(locationSettings: locationSetting);
+  }
+
+  Stream<Position?> observePosition() {
+    return Geolocator.getPositionStream(locationSettings: locationSetting);
+  }
+
+  double calculateDistance(
+      double myLatitude,
+      double myLongitude,
+      double targetLatitude,
+      double targetLongitude,
+      ) {
+    return Geolocator.distanceBetween(
+      myLatitude,
+      myLongitude,
+      targetLatitude,
+      targetLongitude,
+    );
+  }
+}
+
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -165,3 +223,5 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     );
   }
 }
+
+

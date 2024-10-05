@@ -43,7 +43,6 @@
             android:stopWithTask="false"
             android:foregroundServiceType="location|dataSync"/>
 
-        <!-- 새로운 서비스 선언 추가 -->
         <service android:name="id.flutter.flutter_background_service.BackgroundService"
             android:foregroundServiceType="location|dataSync"/>
     </application>
