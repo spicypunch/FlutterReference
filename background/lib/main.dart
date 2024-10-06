@@ -3,9 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
-import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 Future<void> main() async {
@@ -20,11 +18,25 @@ Future<void> requestPermissions() async {
   await Permission.notification.request();
 }
 
+const notificationChannelId = 'my_foreground';
+
+const notificationId = 888;
+
+void startBackgroundService() {
+  final service = FlutterBackgroundService();
+  service.startService();
+}
+
+void stopBackgroundService() {
+  final service = FlutterBackgroundService();
+  service.invoke("stop");
+}
+
 Future<void> initializeService() async {
   final service = FlutterBackgroundService();
 
   const AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'my_foreground',
+    notificationChannelId,
     'MY FOREGROUND SERVICE',
     description: 'This channel is used for important notifications.',
     importance: Importance.low,
@@ -43,10 +55,10 @@ Future<void> initializeService() async {
       onStart: onStart,
       autoStart: false,
       isForegroundMode: true,
-      notificationChannelId: 'my_foreground',
+      notificationChannelId: notificationChannelId,
       initialNotificationTitle: 'AWESOME SERVICE',
       initialNotificationContent: 'Initializing',
-      foregroundServiceNotificationId: 888,
+      foregroundServiceNotificationId: notificationId,
     ),
     iosConfiguration: IosConfiguration(
       autoStart: false,
@@ -67,8 +79,11 @@ Future<bool> onIosBackground(ServiceInstance service) async {
 void onStart(ServiceInstance service) async {
   DartPluginRegistrant.ensureInitialized();
 
-  final locationManager = LocationManager();
-  final position = await locationManager.getCurrentPosition();
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  // final locationManager = LocationManager();
+  // final position = await locationManager.getCurrentPosition();
 
   if (service is AndroidServiceInstance) {
     service.on('setAsForeground').listen((event) {
@@ -87,76 +102,86 @@ void onStart(ServiceInstance service) async {
   Timer.periodic(const Duration(seconds: 1), (timer) async {
     if (service is AndroidServiceInstance) {
       if (await service.isForegroundService()) {
-        service.setForegroundNotificationInfo(
-          title: "My App Service",
-          content: "Updated at ${DateTime.now()}",
+        flutterLocalNotificationsPlugin.show(
+          notificationId,
+          'SERVICE',
+          '${DateTime.now()}',
+          const NotificationDetails(
+            android: AndroidNotificationDetails(
+              notificationChannelId,
+              'My FOREGROUND SERVICE',
+              icon: 'ic_bg_service_small',
+              ongoing: true,
+            ),
+          ),
         );
       }
     }
 
-    print('Background service running: ${position.latitude} ${position.longitude}');
-    service.invoke(
-      'update',
-      {
-        "lat": position.latitude,
-        "lon": position.longitude,
-      },
-    );
+    // print(
+    //     'Background service running: ${position.latitude} ${position.longitude}');
+    // service.invoke(
+    //   'update',
+    //   {
+    //     "lat": position.latitude,
+    //     "lon": position.longitude,
+    //   },
+    // );
   });
 }
 
-class LocationManager {
-  final locationSetting = const LocationSettings(distanceFilter: 5);
-
-  Future<Position> getCurrentPosition() async {
-    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    LocationPermission permission;
-
-    if (!serviceEnabled) {
-      return Future.error('위치서비스를 사용할 수 없음');
-    }
-
-    permission = await Geolocator.checkPermission();
-
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('위치권한 요청이 거부됨');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error('위치권한 요청이 영원히 거부됨');
-    }
-
-    final position = await Geolocator.getLastKnownPosition();
-
-    if (position != null) {
-      return position;
-    }
-
-    return await Geolocator.getCurrentPosition(locationSettings: locationSetting);
-  }
-
-  Stream<Position?> observePosition() {
-    return Geolocator.getPositionStream(locationSettings: locationSetting);
-  }
-
-  double calculateDistance(
-      double myLatitude,
-      double myLongitude,
-      double targetLatitude,
-      double targetLongitude,
-      ) {
-    return Geolocator.distanceBetween(
-      myLatitude,
-      myLongitude,
-      targetLatitude,
-      targetLongitude,
-    );
-  }
-}
-
+// class LocationManager {
+//   final locationSetting = const LocationSettings(distanceFilter: 5);
+//
+//   Future<Position> getCurrentPosition() async {
+//     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+//     LocationPermission permission;
+//
+//     if (!serviceEnabled) {
+//       return Future.error('위치서비스를 사용할 수 없음');
+//     }
+//
+//     permission = await Geolocator.checkPermission();
+//
+//     if (permission == LocationPermission.denied) {
+//       permission = await Geolocator.requestPermission();
+//       if (permission == LocationPermission.denied) {
+//         return Future.error('위치권한 요청이 거부됨');
+//       }
+//     }
+//
+//     if (permission == LocationPermission.deniedForever) {
+//       return Future.error('위치권한 요청이 영원히 거부됨');
+//     }
+//
+//     final position = await Geolocator.getLastKnownPosition();
+//
+//     if (position != null) {
+//       return position;
+//     }
+//
+//     return await Geolocator.getCurrentPosition(
+//         locationSettings: locationSetting);
+//   }
+//
+//   Stream<Position?> observePosition() {
+//     return Geolocator.getPositionStream(locationSettings: locationSetting);
+//   }
+//
+//   double calculateDistance(
+//     double myLatitude,
+//     double myLongitude,
+//     double targetLatitude,
+//     double targetLongitude,
+//   ) {
+//     return Geolocator.distanceBetween(
+//       myLatitude,
+//       myLongitude,
+//       targetLatitude,
+//       targetLongitude,
+//     );
+//   }
+// }
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -179,15 +204,18 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
     final service = FlutterBackgroundService();
+    final isRunning = await service.isRunning();
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.inactive) {
-      // 앱이 백그라운드로 갔을 때, 서비스가 실행 중인지 확인하고 실행
-      service.startService();
+      if (!isRunning) {
+        service.startService();
+      }
     } else if (state == AppLifecycleState.resumed) {
-      // 앱이 포그라운드로 돌아왔을 때 서비스 중지
-      service.invoke("stopService");
+      if (isRunning) {
+        service.invoke("stopService");
+      }
     }
   }
 
@@ -223,5 +251,3 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     );
   }
 }
-
-
