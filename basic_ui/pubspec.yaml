@@ -18,6 +18,7 @@ dependencies:
   logger: any #for logging purpose
   flutter_riverpod: ^2.0.2
   riverpod_annotation: ^1.0.4
+  skeletons: ^0.0.3
 
 dev_dependencies:
   flutter_test:
